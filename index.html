@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Onajonimga Maxsus Tug‘ilgan Kun Sovg‘asi</title>
+    <meta name="description" content="Onajonim uchun maxsus tayyorlangan interaktiv, hissiyotlarga boy va sehrli tug‘ilgan kun tabrigi." />
+    <meta property="og:title" content="Onajonimga Maxsus Tug‘ilgan Kun Sovg‘asi" />
+    <meta property="og:description" content="Onajonim uchun maxsus tayyorlangan interaktiv, hissiyotlarga boy va sehrli tug‘ilgan kun tabrigi." />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#0d0208" />
+
+    <!-- Google Fonts for Luxury Script & Clean Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@600;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body data-scene="1">
+    <!-- Background Canvas for Particles & Fireworks -->
+    <canvas id="particles-canvas" class="canvas-scene-1" aria-hidden="true"></canvas>
+
+    <!-- Desktop Mouse-Tracking Cursor Heart Trail Canvas -->
+    <canvas id="cursor-trail-canvas" aria-hidden="true"></canvas>
+
+    <!-- Ambient Glowing Background Lighting Orbs -->
+    <div class="ambient-glow orb-1" aria-hidden="true"></div>
+    <div class="ambient-glow orb-2" aria-hidden="true"></div>
+    <div class="ambient-glow orb-3" aria-hidden="true"></div>
+
+    <!-- SVG Defs for 3D Glossy Ruby Heart (Matching reference image style) -->
+    <svg width="0" height="0" class="sr-only" aria-hidden="true">
+      <defs>
+        <radialGradient id="ruby3dGrad" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#ff85ae" />
+          <stop offset="28%" stop-color="#ff2d75" />
+          <stop offset="68%" stop-color="#a00632" />
+          <stop offset="100%" stop-color="#3d0113" />
+        </radialGradient>
+        <linearGradient id="glossSheen" x1="15%" y1="10%" x2="50%" y2="80%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.85" />
+          <stop offset="45%" stop-color="#ffffff" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+        <g id="heart3dShape">
+          <path d="M50 86 C50 86 10 58 10 32 C10 15.5 23 7.5 35 7.5 C43 7.5 48.2 12.5 50 16.5 C51.8 12.5 57 7.5 65 7.5 C77 7.5 90 15.5 90 32 C90 58 50 86 50 86 Z" fill="url(#ruby3dGrad)" />
+          <!-- Specular Highlight Sheen Arc -->
+          <path d="M22 23 C23 16 29 12 36 12 C41 12 44.5 14 46.5 17.5 C43.5 15.5 38.5 14.5 34.5 15.5 C27.5 17.5 23.5 22 22 23 Z" fill="url(#glossSheen)" />
+        </g>
+      </defs>
+    </svg>
+
+    <!-- Cinematic 3D Floating Bokeh Hearts Background (matching reference image style) -->
+    <div class="bg-bokeh-hearts" id="bg-bokeh-hearts" aria-hidden="true">
+      <div class="bokeh-heart-item heart-pos-bl">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+      <div class="bokeh-heart-item heart-pos-br">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+      <div class="bokeh-heart-item heart-pos-tr">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+      <div class="bokeh-heart-item heart-pos-tl">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+      <div class="bokeh-heart-item heart-pos-ml">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+      <div class="bokeh-heart-item heart-pos-mr">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+      <div class="bokeh-heart-item heart-pos-bc">
+        <svg viewBox="0 0 100 90" class="svg-3d-heart"><use href="#heart3dShape" /></svg>
+      </div>
+    </div>
+
+    <!-- Audio Element (Customizable path: assets/music.mp3) -->
+    <!-- REPLACE THIS PATH WITH YOUR OWN MP3 FILE IF DESIRED -->
+    <audio id="bg-audio" loop preload="none">
+      <source src="assets/music.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- Top Navigation Header with Music Toggle & Chapter Indicator -->
+    <header class="app-header" id="app-header">
+      <!-- Special Birthday Header Message Banner (Active when today matches mother's birthday) -->
+      <div id="header-birthday-banner" class="header-birthday-banner hidden" role="status" aria-live="polite">
+        <div class="bday-banner-content">
+          <span class="bday-sparkle" aria-hidden="true">✨</span>
+          <span class="bday-highlight-text">Bugun sizning kuningiz!</span>
+          <span class="bday-divider" aria-hidden="true">•</span>
+          <span class="bday-wishes-text">Tug‘ilgan kuningiz muborak bo‘lsin, aziz Onajon! ❤️</span>
+          <span class="bday-sparkle" aria-hidden="true">🎉</span>
+        </div>
+      </div>
+
+      <div class="header-content">
+        <div class="header-brand-group">
+          <div class="brand-badge" id="brand-badge">
+            <span class="heart-pulse-icon" aria-hidden="true">❤️</span>
+            <span class="brand-text">Onajonim Uchun</span>
+          </div>
+
+          <!-- Personalized Birthday Badge in Header -->
+          <div id="header-birthday-badge" class="header-birthday-badge hidden" title="Bugun onajonimning tavallud kuni! ✨">
+            <span class="bday-badge-spark" aria-hidden="true">🎂</span>
+            <span class="bday-badge-text">Bugun sizning kuningiz!</span>
+            <span class="bday-badge-spark" aria-hidden="true">✨</span>
+          </div>
+        </div>
+
+        <!-- Story Step Dots -->
+        <nav class="step-indicator" aria-label="Bosqichlar ko'rsatkichi" id="step-indicator">
+          <div class="step-dot active" data-step="1" title="Maxfiy kod">
+            <span class="dot-num">1</span>
+          </div>
+          <div class="step-line" aria-hidden="true"></div>
+          <div class="step-dot" data-step="2" title="Sovg‘ani tanlash">
+            <span class="dot-num">2</span>
+          </div>
+          <div class="step-line" aria-hidden="true"></div>
+          <div class="step-dot" data-step="3" title="Yurak tilaklari">
+            <span class="dot-num">3</span>
+          </div>
+          <div class="step-line" aria-hidden="true"></div>
+          <div class="step-dot" data-step="4" title="Tantanali sovg‘a">
+            <span class="dot-num">4</span>
+          </div>
+        </nav>
+
+        <!-- Music Control Button -->
+        <button
+          type="button"
+          id="music-toggle-btn"
+          class="music-btn"
+          aria-label="Musiqani yoqish yoki o‘chirish"
+          title="Musiqa (yoqish/o‘chirish)"
+        >
+          <span class="music-icon" id="music-icon" aria-hidden="true">🔇</span>
+          <span class="music-waves" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         THEATRICAL VELVET CURTAINS
+         Grand Stage Unveiling for Scene 1 -> Scene 2
+         ========================================== -->
+    <div id="theatrical-curtain" class="theatrical-curtain hidden" aria-hidden="true">
+      <!-- Velvet Pelmet / Top Swags (Valance) -->
+      <div class="curtain-valance" id="curtain-valance">
+        <div class="valance-swag swag-left"></div>
+        <div class="valance-swag swag-center"></div>
+        <div class="valance-swag swag-right"></div>
+        <div class="valance-gold-fringe"></div>
+        <div class="valance-tassels">
+          <span class="gold-tassel t-1"></span>
+          <span class="gold-tassel t-2"></span>
+          <span class="gold-tassel t-3"></span>
+          <span class="gold-tassel t-4"></span>
+        </div>
+      </div>
+
+      <!-- Left Velvet Drape Panel -->
+      <div class="curtain-panel curtain-left" id="curtain-panel-left">
+        <div class="velvet-pleats"></div>
+        <div class="curtain-inner-glow"></div>
+        <div class="curtain-center-gold-hem"></div>
+        <div class="curtain-bottom-gold-fringe"></div>
+        <div class="curtain-tieback left">
+          <div class="tieback-braid"></div>
+          <div class="tieback-tassel"></div>
+        </div>
+      </div>
+
+      <!-- Right Velvet Drape Panel -->
+      <div class="curtain-panel curtain-right" id="curtain-panel-right">
+        <div class="velvet-pleats"></div>
+        <div class="curtain-inner-glow"></div>
+        <div class="curtain-center-gold-hem"></div>
+        <div class="curtain-bottom-gold-fringe"></div>
+        <div class="curtain-tieback right">
+          <div class="tieback-braid"></div>
+          <div class="tieback-tassel"></div>
+        </div>
+      </div>
+
+      <!-- Parting Center Golden Light Beam & Sparkle Flare -->
+      <div class="curtain-center-flare" id="curtain-center-flare"></div>
+      <div class="curtain-parting-burst" id="curtain-parting-burst"></div>
+    </div>
+
+    <!-- Main Dynamic Interactive View Container -->
+    <main class="main-stage" id="main-stage">
+      <!-- ==========================================
+           SCENE 1: PASSWORD MINI-GAME
+           ========================================== -->
+      <section class="scene-view scene-active" id="scene-password" aria-label="1-bosqich: Maxfiy kodni topish">
+        <div class="card-glass password-card" id="password-card">
+          <!-- Animated Glowing Heart Lock Icon -->
+          <div class="lock-wrapper heart-lock-wrapper" id="lock-wrapper" aria-hidden="true">
+            <div class="lock-glow"></div>
+            <svg class="lock-svg heart-lock-svg" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2">
+              <path class="lock-shackle" id="lock-shackle" d="M10 11V7a4 4 0 0 1 8 0v4" stroke-linecap="round" />
+              <path class="heart-lock-body" d="M14 26C14 26 5 19.5 5 14C5 11 7.2 9 10 9C12 9 13.5 10 14 11.2C14.5 10 16 9 18 9C20.8 9 23 11 23 14C23 19.5 14 26 14 26Z" fill="currentColor" fill-opacity="0.25" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+              <circle cx="14" cy="15.5" r="1.5" fill="currentColor" />
+              <path d="M14 17V19" stroke-linecap="round" stroke-width="2" />
+            </svg>
+          </div>
+
+          <h1 class="scene-title">Sirli sovg‘ani oching</h1>
+          <p class="scene-subtitle">A special place, just for you ♥</p>
+
+          <!-- Password Form -->
+          <form id="password-form" class="password-form" onsubmit="return false;">
+            <div class="input-group">
+              <input
+                type="password"
+                id="password-input"
+                class="password-input"
+                placeholder="Maxfiy kod..."
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="8"
+                autocomplete="off"
+                aria-label="Maxfiy kodni kiriting"
+                required
+              />
+              <button
+                type="button"
+                id="toggle-password-btn"
+                class="toggle-eye-btn"
+                aria-label="Kodni ko‘rsatish yoki yashirish"
+                title="Kodni ko‘rsatish"
+              >
+                <!-- Eye Open Icon -->
+                <svg id="eye-open-icon" class="eye-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <!-- Eye Closed Icon -->
+                <svg id="eye-closed-icon" class="eye-svg hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submit-password-btn" class="btn-primary glow-btn">
+              <span class="btn-glow-layer"></span>
+              <span class="btn-text">Sovg‘ani ochish</span>
+              <span class="btn-icon" aria-hidden="true">✨</span>
+            </button>
+          </form>
+
+          <!-- Toast Notification Container -->
+          <div id="password-feedback" class="feedback-msg" aria-live="polite" role="status"></div>
+
+          <!-- Hint System -->
+          <div class="hint-container">
+            <button type="button" id="hint-toggle-btn" class="hint-link">
+              <span class="hint-question-icon">💡</span>
+              <span>Maslahat kerakmi?</span>
+            </button>
+            <div id="hint-box" class="hint-box hidden" aria-live="polite">
+              <p id="hint-text" class="hint-text"></p>
+            </div>
+          </div>
+
+          <div class="card-footer-note" aria-hidden="true">
+            <span>♥ Made with Love for Mother ♥</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SCENE 2: THREE MYSTERY GIFTS
+           ========================================== -->
+      <section class="scene-view" id="scene-gifts" aria-label="2-bosqich: Sovg‘ani toping" hidden>
+        <div class="scene-header">
+          <span class="scene-pretitle">Sehrli lahza</span>
+          <h1 class="scene-title">Endi sovg‘angizni toping 🎁</h1>
+          <p class="scene-subtitle">Uchta sovg‘adan faqat bittasida maxsus tilak yashiringan.</p>
+        </div>
+
+        <!-- Three Luxurious CSS Gift Boxes -->
+        <div class="gifts-grid" id="gifts-grid" role="group" aria-label="Uchta sovg‘a qutisi">
+          <!-- Gift 1: Wrong -->
+          <button
+            type="button"
+            class="gift-card"
+            id="gift-1"
+            data-gift-id="1"
+            aria-label="1-sovg‘a qutisi"
+          >
+            <div class="gift-sparkles" aria-hidden="true">
+              <span class="sparkle s1">✦</span>
+              <span class="sparkle s2">✧</span>
+            </div>
+            <div class="css-gift-box">
+              <div class="gift-lid">
+                <div class="bow-wrap">
+                  <div class="bow-loop left"></div>
+                  <div class="bow-loop right"></div>
+                  <div class="bow-center"></div>
+                </div>
+                <div class="lid-ribbon"></div>
+                <div class="lid-cap"></div>
+              </div>
+              <div class="gift-body">
+                <div class="gift-glow-aura"></div>
+                <div class="ribbon-vertical"></div>
+                <div class="ribbon-horizontal"></div>
+              </div>
+            </div>
+            <div class="gift-platform-shadow"></div>
+            <span class="gift-badge">1-sovg‘a</span>
+          </button>
+
+          <!-- Gift 2: The Correct Mystery Box! -->
+          <button
+            type="button"
+            class="gift-card gift-card-featured"
+            id="gift-2"
+            data-gift-id="2"
+            aria-label="2-sovg‘a qutisi (O‘rtadagi sirli quti)"
+          >
+            <div class="gift-sparkles" aria-hidden="true">
+              <span class="sparkle s1">✨</span>
+              <span class="sparkle s2">✦</span>
+              <span class="sparkle s3">⭐</span>
+            </div>
+            <div class="css-gift-box">
+              <div class="gift-lid">
+                <div class="bow-wrap">
+                  <div class="bow-loop left gold-bow"></div>
+                  <div class="bow-loop right gold-bow"></div>
+                  <div class="bow-center gold-center"></div>
+                </div>
+                <div class="lid-ribbon gold-ribbon"></div>
+                <div class="lid-cap"></div>
+              </div>
+              <div class="gift-body">
+                <div class="gift-glow-aura aura-middle"></div>
+                <!-- Magical light beam that bursts when opened -->
+                <div class="magical-light-beam" id="magical-light-beam" aria-hidden="true"></div>
+                <div class="ribbon-vertical gold-ribbon"></div>
+                <div class="ribbon-horizontal gold-ribbon"></div>
+              </div>
+            </div>
+            <div class="gift-platform-shadow"></div>
+            <span class="gift-badge gold-badge">2-sovg‘a</span>
+          </button>
+
+          <!-- Gift 3: Wrong -->
+          <button
+            type="button"
+            class="gift-card"
+            id="gift-3"
+            data-gift-id="3"
+            aria-label="3-sovg‘a qutisi"
+          >
+            <div class="gift-sparkles" aria-hidden="true">
+              <span class="sparkle s1">✧</span>
+              <span class="sparkle s2">✦</span>
+            </div>
+            <div class="css-gift-box">
+              <div class="gift-lid">
+                <div class="bow-wrap">
+                  <div class="bow-loop left"></div>
+                  <div class="bow-loop right"></div>
+                  <div class="bow-center"></div>
+                </div>
+                <div class="lid-ribbon"></div>
+                <div class="lid-cap"></div>
+              </div>
+              <div class="gift-body">
+                <div class="gift-glow-aura"></div>
+                <div class="ribbon-vertical"></div>
+                <div class="ribbon-horizontal"></div>
+              </div>
+            </div>
+            <div class="gift-platform-shadow"></div>
+            <span class="gift-badge">3-sovg‘a</span>
+          </button>
+        </div>
+
+        <!-- Wrong Gift Floating Notice / Modal -->
+        <div id="wrong-gift-modal" class="wrong-modal hidden" aria-live="polite" role="dialog">
+          <div class="wrong-modal-content">
+            <div class="wrong-icon-anim" aria-hidden="true">🎈</div>
+            <h3 class="wrong-title">Oops! Wrong 😁</h3>
+            <p class="wrong-desc">Bu sovg‘ada emas. Yana birini tanlang!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SCENE 3: EMOTIONAL BIRTHDAY MESSAGE
+           ========================================== -->
+      <section class="scene-view" id="scene-message" aria-label="3-bosqich: Onajonimga samimiy tilaklar" hidden>
+        <div class="card-glass message-card" id="message-card">
+          <!-- Glowing Wireframe Corner Hearts -->
+          <div class="letter-corner-heart top-left" aria-hidden="true">♡</div>
+          <div class="letter-corner-heart top-right" aria-hidden="true">♡</div>
+          <div class="letter-corner-heart bottom-left" aria-hidden="true">♡</div>
+          <div class="letter-corner-heart bottom-right" aria-hidden="true">♡</div>
+
+          <!-- Card Decorative Header -->
+          <div class="card-top-decoration">
+            <span class="letter-pretitle">♥ A Letter For You ♥</span>
+            <div class="heart-crown">
+              <span class="crown-side-sparkle">✨</span>
+              <div class="heart-emblem">❤️</div>
+              <span class="crown-side-sparkle">✨</span>
+            </div>
+            <span class="found-tag">To‘g‘ri topdingiz! ♡</span>
+          </div>
+
+          <!-- Typewriter / Animated Message Area -->
+          <div class="message-content" id="message-content-container">
+            <h2 class="message-heading" id="typed-heading"></h2>
+            <div class="message-body" id="typed-body"></div>
+          </div>
+
+          <!-- Decorative Glowing Glass Envelope & Feather Elements -->
+          <div class="letter-decorations" aria-hidden="true">
+            <div class="glass-envelope-decor">
+              <svg viewBox="0 0 48 36" fill="none" class="decor-envelope-svg">
+                <rect x="2" y="3" width="44" height="30" rx="4" stroke="currentColor" stroke-width="1.8" fill="rgba(255, 45, 117, 0.12)" />
+                <path d="M3 4L24 20L45 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="24" cy="20" r="3.5" fill="#ff2d75" />
+              </svg>
+            </div>
+            <div class="glass-feather-decor">
+              <svg viewBox="0 0 40 40" fill="none" class="decor-feather-svg">
+                <path d="M32 4C32 4 22 10 18 20C15 28 8 34 8 34C8 34 16 32 23 27C31 21 34 10 34 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M32 4L12 36" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2" stroke-linecap="round" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Final Celebration Trigger Button -->
+          <div class="message-actions" id="message-actions">
+            <button type="button" id="final-surprise-btn" class="btn-primary glow-btn final-btn pulse-glow">
+              <span class="btn-glow-layer"></span>
+              <span class="btn-text">Yakuniy sovg‘a ♡</span>
+              <span class="btn-icon" aria-hidden="true">✨</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           SCENE 4: FINAL GRAND CELEBRATION
+           ========================================== -->
+      <section class="scene-view" id="scene-celebration" aria-label="4-bosqich: Tug‘ilgan kun tantanasi" hidden>
+        <!-- Atmospheric 3D Floating Celebration Balloons in the Background -->
+        <div class="celebration-balloons-bg" aria-hidden="true">
+          <div class="celebration-balloon balloon-gold balloon-1">
+            <div class="balloon-sphere"><span class="balloon-shine"></span></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+          <div class="celebration-balloon balloon-rose balloon-2">
+            <div class="balloon-sphere"><span class="balloon-shine"></span></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+          <div class="celebration-balloon balloon-wine balloon-3">
+            <div class="balloon-sphere"><span class="balloon-shine"></span></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+          <div class="celebration-balloon balloon-blush balloon-4">
+            <div class="balloon-sphere"><span class="balloon-shine"></span></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+          <div class="celebration-balloon balloon-champagne balloon-5">
+            <div class="balloon-sphere"><span class="balloon-shine"></span></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+          <div class="celebration-balloon balloon-rose-gold balloon-6">
+            <div class="balloon-sphere"><span class="balloon-shine"></span></div>
+            <div class="balloon-knot"></div>
+            <div class="balloon-string"></div>
+          </div>
+        </div>
+
+        <div class="celebration-container">
+          <!-- Floating Heart Ribbon Top Banner -->
+          <div class="celebration-banner">
+            <span class="floating-heart-bubble">💖</span>
+            <span class="celebration-badge">Tantana & Baxt</span>
+            <span class="floating-heart-bubble">💖</span>
+          </div>
+
+          <!-- Animated Birthday Cake with Glowing Flickering Candle -->
+          <div class="cake-interactive-area" id="cake-area" title="Shamlarni puflang yoki bosing!" role="button" tabindex="0" aria-label="Sehrli tort va shamlar">
+            <div class="cake-container">
+              <!-- Candle and flame -->
+              <div class="candle-wrapper">
+                <div class="candle-flame" id="candle-flame"></div>
+                <div class="candle-wick"></div>
+                <div class="candle-stick"></div>
+              </div>
+
+              <!-- Tier 1: Top of cake -->
+              <div class="cake-tier tier-top">
+                <div class="frosting-drips">
+                  <span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="cake-berry">🍓</div>
+                <div class="tier-body"></div>
+              </div>
+
+              <!-- Tier 2: Base of cake -->
+              <div class="cake-tier tier-bottom">
+                <div class="frosting-pearls">
+                  <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="tier-body"></div>
+              </div>
+
+              <!-- Cake Plate & Golden Glow -->
+              <div class="cake-plate"></div>
+              <div class="cake-ambient-glow"></div>
+
+              <!-- 3D Glossy Ruby Heart Balloons Bouquet (matching panel 6 of reference image) -->
+              <div class="cake-balloon-cluster" aria-hidden="true">
+                <div class="balloon-item b-1">
+                  <svg viewBox="0 0 100 90" class="balloon-svg"><use href="#heart3dShape" /></svg>
+                  <div class="balloon-string"></div>
+                </div>
+                <div class="balloon-item b-2">
+                  <svg viewBox="0 0 100 90" class="balloon-svg"><use href="#heart3dShape" /></svg>
+                  <div class="balloon-string"></div>
+                </div>
+                <div class="balloon-item b-3">
+                  <svg viewBox="0 0 100 90" class="balloon-svg"><use href="#heart3dShape" /></svg>
+                  <div class="balloon-string"></div>
+                </div>
+                <div class="balloon-item b-4">
+                  <svg viewBox="0 0 100 90" class="balloon-svg"><use href="#heart3dShape" /></svg>
+                  <div class="balloon-string"></div>
+                </div>
+              </div>
+            </div>
+            <p class="cake-hint">Sehrli shamni bosing ✨</p>
+          </div>
+
+          <!-- Emotional Climax Typography matching Neon Glow Theme -->
+          <div class="celebration-texts">
+            <div class="climax-neon-header">
+              <span class="climax-pre-script neon-pink-script">Happy Birthday,</span>
+              <h1 class="climax-title neon-title-wrap">
+                <span class="neon-name">Onajonim</span>
+                <span class="neon-heart-outline" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" fill="none" class="neon-heart-svg">
+                    <path d="M16 28C16 28 3 19.5 3 11.5C3 6.5 7 3.5 11.5 3.5C14.5 3.5 16 5.5 16 5.5C16 5.5 17.5 3.5 20.5 3.5C25 3.5 29 6.5 29 11.5C29 19.5 16 28 16 28Z" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </h1>
+              <div class="climax-date-pill" aria-label="Tug‘ilgan kun sanasi">
+                <span>♥ 8 Sentabr ♥</span>
+              </div>
+            </div>
+            <p class="climax-subtitle">Har doim baxtli, sog‘lom va yuzingizdan tabassum arimasin.</p>
+            <div class="climax-heart-quote">
+              <span class="quote-sparkle">🌸</span>
+              <span class="quote-text">Biz sizni juda yaxshi ko‘ramiz ♡</span>
+              <span class="quote-sparkle">🌸</span>
+            </div>
+          </div>
+
+          <!-- Celebration Control Options -->
+          <div class="celebration-buttons">
+            <button type="button" id="open-gallery-btn" class="btn-primary glow-btn gallery-trigger-btn" aria-haspopup="dialog">
+              <span class="btn-glow-layer"></span>
+              <span class="btn-icon" aria-hidden="true">📸</span>
+              <span class="btn-text">Xotiralar albomi</span>
+            </button>
+            <button type="button" id="replay-fireworks-btn" class="btn-secondary">
+              <span>🎆 Salütlarni qayta otish</span>
+            </button>
+            <button type="button" id="restart-journey-btn" class="btn-link">
+              <span>🔄 Boshidan ko‘rish</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ==========================================
+         MEMORY GALLERY MODAL / SLIDE-IN COMPONENT
+         ========================================== -->
+    <div id="memory-gallery-modal" class="gallery-modal hidden" role="dialog" aria-modal="true" aria-labelledby="gallery-title" aria-hidden="true">
+      <div class="gallery-backdrop" id="gallery-backdrop" tabindex="-1"></div>
+      <div class="gallery-drawer" id="gallery-drawer" role="document">
+        <!-- Drawer Top Handle for Mobile Drag Hint -->
+        <div class="drawer-handle-bar" aria-hidden="true"></div>
+
+        <!-- Panel Header -->
+        <div class="gallery-header">
+          <div class="gallery-header-info">
+            <span class="gallery-pill-tag">♥ Our Precious Memories ♥</span>
+            <h2 id="gallery-title" class="gallery-title">Xotiralar Albomi</h2>
+            <p class="gallery-subtitle">Moments that mean everything</p>
+          </div>
+          <button type="button" id="close-gallery-btn" class="gallery-close-btn" aria-label="Galereyani yopish">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Gallery Body -->
+        <div class="gallery-scrollable" id="gallery-scrollable">
+          <!-- Screen Reader Instructions & Live Announcement Region for Keyboard Arrow Navigation -->
+          <p id="gallery-keyboard-instruction" class="sr-only">
+            Xotiralar bo‘ylab harakatlanish uchun klaviaturadagi strelka tugmalaridan (chap, o‘ng, yuqoriga, pastga) foydalaning. Rasm tavsiflari avtomatik o‘qib eshittiriladi. Kattalashtirish uchun Enter yoki Bo‘shliq tugmasini bosing.
+          </p>
+          <div id="gallery-live-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+          <div class="gallery-grid" id="gallery-grid" role="region" aria-label="Xotiralar to‘plami" aria-describedby="gallery-keyboard-instruction">
+            <!-- Memory Item 1 -->
+            <article class="gallery-card polaroid-card" id="gallery-card-0" data-index="0" tabindex="0" role="button" aria-labelledby="gallery-title-0" aria-describedby="gallery-desc-0 gallery-live-item-0" aria-label="1-xotira: Oila davrasidagi iliq oqshom">
+              <div class="polaroid-heart-clip" aria-hidden="true">♥</div>
+              <div class="gallery-img-wrap">
+                <img
+                  src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&q=80"
+                  alt="Oila a'zolari birgalikda mehrli suhbatda"
+                  class="gallery-img"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="gallery-card-tag" id="gallery-tag-0">🏡 Oila fayzi</span>
+                <button type="button" class="gallery-like-btn" aria-label="Xotiraga yurakcha qo‘yish" title="Yurakcha">
+                  <span class="like-heart">❤️</span>
+                  <span class="like-count">1</span>
+                </button>
+              </div>
+              <div class="gallery-card-body">
+                <h3 class="gallery-card-title" id="gallery-title-0">Oila davrasidagi iliq oqshom</h3>
+                <p class="gallery-card-desc" id="gallery-desc-0">Dasturxon atrofida jam bo‘lib, sizning mehringiz va ezgu duolaringizdan bahramand bo‘lgan damlarimiz.</p>
+                <div class="gallery-card-footer">
+                  <span class="gallery-date" id="gallery-date-0">✨ Qalbimiz to‘rida</span>
+                  <span class="gallery-view-hint">Kattalashtirish ↗</span>
+                </div>
+              </div>
+              <!-- Specific ARIA Live Region for Item 1 -->
+              <div id="gallery-live-item-0" class="sr-only gallery-item-live-region" aria-live="polite" aria-atomic="true">
+                1-xotira: Oila davrasidagi iliq oqshom. Rasm tavsifi: Dasturxon atrofida jam bo‘lib, sizning mehringiz va ezgu duolaringizdan bahramand bo‘lgan damlarimiz. Bo‘lim: Oila fayzi.
+              </div>
+            </article>
+
+            <!-- Memory Item 2 -->
+            <article class="gallery-card polaroid-card" id="gallery-card-1" data-index="1" tabindex="0" role="button" aria-labelledby="gallery-title-1" aria-describedby="gallery-desc-1 gallery-live-item-1" aria-label="2-xotira: Bahor nafasi va gullar">
+              <div class="polaroid-heart-clip" aria-hidden="true">♥</div>
+              <div class="gallery-img-wrap">
+                <img
+                  src="https://images.unsplash.com/photo-1561181286-d3fee7d55364?auto=format&fit=crop&w=800&q=80"
+                  alt="Nafis atirgul guldastasi"
+                  class="gallery-img"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="gallery-card-tag" id="gallery-tag-1">🌸 Nafislik</span>
+                <button type="button" class="gallery-like-btn" aria-label="Xotiraga yurakcha qo‘yish" title="Yurakcha">
+                  <span class="like-heart">❤️</span>
+                  <span class="like-count">1</span>
+                </button>
+              </div>
+              <div class="gallery-card-body">
+                <h3 class="gallery-card-title" id="gallery-title-1">Bahor nafasi va gullar</h3>
+                <p class="gallery-card-desc" id="gallery-desc-1">Sizga atalgan eng go‘zal guldastalar ham sizning bepoyon qalbingiz va tabassumingiz oldida xijolat tortadi.</p>
+                <div class="gallery-card-footer">
+                  <span class="gallery-date" id="gallery-date-1">🌸 Bahoriy quvonch</span>
+                  <span class="gallery-view-hint">Kattalashtirish ↗</span>
+                </div>
+              </div>
+              <!-- Specific ARIA Live Region for Item 2 -->
+              <div id="gallery-live-item-1" class="sr-only gallery-item-live-region" aria-live="polite" aria-atomic="true">
+                2-xotira: Bahor nafasi va gullar. Rasm tavsifi: Sizga atalgan eng go‘zal guldastalar ham sizning bepoyon qalbingiz va tabassumingiz oldida xijolat tortadi. Bo‘lim: Nafislik.
+              </div>
+            </article>
+
+            <!-- Memory Item 3 -->
+            <article class="gallery-card polaroid-card" id="gallery-card-2" data-index="2" tabindex="0" role="button" aria-labelledby="gallery-title-2" aria-describedby="gallery-desc-2 gallery-live-item-2" aria-label="3-xotira: Iliq choy va dildan suhbat">
+              <div class="polaroid-heart-clip" aria-hidden="true">♥</div>
+              <div class="gallery-img-wrap">
+                <img
+                  src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=800&q=80"
+                  alt="Iliq choy ustidagi samimiy suhbat"
+                  class="gallery-img"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="gallery-card-tag" id="gallery-tag-2">☕ Choy suhbati</span>
+                <button type="button" class="gallery-like-btn" aria-label="Xotiraga yurakcha qo‘yish" title="Yurakcha">
+                  <span class="like-heart">❤️</span>
+                  <span class="like-count">1</span>
+                </button>
+              </div>
+              <div class="gallery-card-body">
+                <h3 class="gallery-card-title" id="gallery-title-2">Iliq choy va dildan suhbat</h3>
+                <p class="gallery-card-desc" id="gallery-desc-2">Siz bilan bir piyola choy ustidagi samimiy suhbatlar — barcha charchoqlarni arituvchi eng yaxshi taskin.</p>
+                <div class="gallery-card-footer">
+                  <span class="gallery-date" id="gallery-date-2">☕ Shiringina daqiqalar</span>
+                  <span class="gallery-view-hint">Kattalashtirish ↗</span>
+                </div>
+              </div>
+              <!-- Specific ARIA Live Region for Item 3 -->
+              <div id="gallery-live-item-2" class="sr-only gallery-item-live-region" aria-live="polite" aria-atomic="true">
+                3-xotira: Iliq choy va dildan suhbat. Rasm tavsifi: Siz bilan bir piyola choy ustidagi samimiy suhbatlar — barcha charchoqlarni arituvchi eng yaxshi taskin. Bo‘lim: Choy suhbati.
+              </div>
+            </article>
+
+            <!-- Memory Item 4 -->
+            <article class="gallery-card polaroid-card" id="gallery-card-3" data-index="3" tabindex="0" role="button" aria-labelledby="gallery-title-3" aria-describedby="gallery-desc-3 gallery-live-item-3" aria-label="4-xotira: Oltin shafaq va xotirjamlik">
+              <div class="polaroid-heart-clip" aria-hidden="true">♥</div>
+              <div class="gallery-img-wrap">
+                <img
+                  src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=800&q=80"
+                  alt="Quyosh botishi va sokin nurli tabiat"
+                  class="gallery-img"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="gallery-card-tag" id="gallery-tag-3">✨ Sokin damlar</span>
+                <button type="button" class="gallery-like-btn" aria-label="Xotiraga yurakcha qo‘yish" title="Yurakcha">
+                  <span class="like-heart">❤️</span>
+                  <span class="like-count">1</span>
+                </button>
+              </div>
+              <div class="gallery-card-body">
+                <h3 class="gallery-card-title" id="gallery-title-3">Oltin shafaq va xotirjamlik</h3>
+                <p class="gallery-card-desc" id="gallery-desc-3">Tabiat bag‘ridagi sokin sayrlar, xotirjam tabassum va siz bilan o‘tgan har bir oltin daqiqaning qadri cheksiz.</p>
+                <div class="gallery-card-footer">
+                  <span class="gallery-date" id="gallery-date-3">🌅 Unutilmas sayr</span>
+                  <span class="gallery-view-hint">Kattalashtirish ↗</span>
+                </div>
+              </div>
+              <!-- Specific ARIA Live Region for Item 4 -->
+              <div id="gallery-live-item-3" class="sr-only gallery-item-live-region" aria-live="polite" aria-atomic="true">
+                4-xotira: Oltin shafaq va xotirjamlik. Rasm tavsifi: Tabiat bag‘ridagi sokin sayrlar, xotirjam tabassum va siz bilan o‘tgan har bir oltin daqiqaning qadri cheksiz. Bo‘lim: Sokin damlar.
+              </div>
+            </article>
+
+            <!-- Memory Item 5 -->
+            <article class="gallery-card polaroid-card" id="gallery-card-4" data-index="4" tabindex="0" role="button" aria-labelledby="gallery-title-4" aria-describedby="gallery-desc-4 gallery-live-item-4" aria-label="5-xotira: Mehr to‘la quchoq va panoh">
+              <div class="polaroid-heart-clip" aria-hidden="true">♥</div>
+              <div class="gallery-img-wrap">
+                <img
+                  src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80"
+                  alt="Ona va farzand orasidagi mehrli onlar"
+                  class="gallery-img"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="gallery-card-tag" id="gallery-tag-4">❤️ Cheksiz mehr</span>
+                <button type="button" class="gallery-like-btn" aria-label="Xotiraga yurakcha qo‘yish" title="Yurakcha">
+                  <span class="like-heart">❤️</span>
+                  <span class="like-count">1</span>
+                </button>
+              </div>
+              <div class="gallery-card-body">
+                <h3 class="gallery-card-title" id="gallery-title-4">Mehr to‘la quchoq va panoh</h3>
+                <p class="gallery-card-desc" id="gallery-desc-4">Dunyodagi eng xavfsiz va eng iliq makon — sizning bag‘ringiz. Doimo sog‘-omon, baxtimizga omon bo‘ling!</p>
+                <div class="gallery-card-footer">
+                  <span class="gallery-date" id="gallery-date-4">🤍 Onam duolari</span>
+                  <span class="gallery-view-hint">Kattalashtirish ↗</span>
+                </div>
+              </div>
+              <!-- Specific ARIA Live Region for Item 5 -->
+              <div id="gallery-live-item-4" class="sr-only gallery-item-live-region" aria-live="polite" aria-atomic="true">
+                5-xotira: Mehr to‘la quchoq va panoh. Rasm tavsifi: Dunyodagi eng xavfsiz va eng iliq makon — sizning bag‘ringiz. Doimo sog‘-omon, baxtimizga omon bo‘ling! Bo‘lim: Cheksiz mehr.
+              </div>
+            </article>
+
+            <!-- Memory Item 6 -->
+            <article class="gallery-card polaroid-card" id="gallery-card-5" data-index="5" tabindex="0" role="button" aria-labelledby="gallery-title-5" aria-describedby="gallery-desc-5 gallery-live-item-5" aria-label="6-xotira: Yorqin bayram va orzular">
+              <div class="polaroid-heart-clip" aria-hidden="true">♥</div>
+              <div class="gallery-img-wrap">
+                <img
+                  src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80"
+                  alt="Tantanali bayram torti va iliq shamlar yog‘dusi"
+                  class="gallery-img"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                />
+                <span class="gallery-card-tag" id="gallery-tag-5">🎂 Shodiyona</span>
+                <button type="button" class="gallery-like-btn" aria-label="Xotiraga yurakcha qo‘yish" title="Yurakcha">
+                  <span class="like-heart">❤️</span>
+                  <span class="like-count">1</span>
+                </button>
+              </div>
+              <div class="gallery-card-body">
+                <h3 class="gallery-card-title" id="gallery-title-5">Yorqin bayram va orzular</h3>
+                <p class="gallery-card-desc" id="gallery-desc-5">Har bir yangi yoshingiz yangi quvonchlar, sihat-salomatlik va farzandlar kamoli bilan fayzli bo‘lsin!</p>
+                <div class="gallery-card-footer">
+                  <span class="gallery-date" id="gallery-date-5">🎉 Baxtli on</span>
+                  <span class="gallery-view-hint">Kattalashtirish ↗</span>
+                </div>
+              </div>
+              <!-- Specific ARIA Live Region for Item 6 -->
+              <div id="gallery-live-item-5" class="sr-only gallery-item-live-region" aria-live="polite" aria-atomic="true">
+                6-xotira: Yorqin bayram va orzular. Rasm tavsifi: Har bir yangi yoshingiz yangi quvonchlar, sihat-salomatlik va farzandlar kamoli bilan fayzli bo‘lsin! Bo‘lim: Shodiyona.
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- Gallery Footer -->
+        <div class="gallery-footer">
+          <p class="gallery-quote">
+            <span class="quote-spark" aria-hidden="true">✨</span>
+            «Har bir lahza qalbimizda muhrlangan va siz bilan yanada go‘zaldir <span class="quote-heart" title="Cheksiz mehr" aria-hidden="true">❤️</span>»
+            <span class="quote-spark" aria-hidden="true">✨</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lightbox Zoom Modal for Detailed View -->
+    <div id="gallery-lightbox" class="gallery-lightbox hidden" role="dialog" aria-modal="true" aria-label="Xotirani kattalashtirib ko‘rish" aria-hidden="true">
+      <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+      <div class="lightbox-container" role="document">
+        <button type="button" id="lightbox-close-btn" class="lightbox-close-btn" aria-label="Rasmni yopish">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+        <div class="lightbox-img-frame">
+          <img id="lightbox-img" class="lightbox-img" src="" alt="" referrerpolicy="no-referrer" />
+        </div>
+        <div class="lightbox-meta">
+          <span id="lightbox-tag" class="gallery-card-tag"></span>
+          <h3 id="lightbox-title" class="lightbox-title"></h3>
+          <p id="lightbox-desc" class="lightbox-desc"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Script Entry (Modular Vanilla JavaScript) -->
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

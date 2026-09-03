@@ -1,0 +1,6 @@
+{
+  "name": "Onajonimga Maxsus Tug‘ilgan Kun Sovg‘asi",
+  "description": "Onajonim uchun maxsus tayyorlangan interaktiv, hissiyotlarga boy va sehrli tug‘ilgan kun tabrigi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
